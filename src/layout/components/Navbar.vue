@@ -7,7 +7,7 @@
     />
 
     <div class="app-breadcrumb">
-      江苏传智播客教育科技股份有限公司
+      {{ $store.state.user.userInfo.companyName }}
       <span class="breadBtn">体验版</span>
     </div>
     <!-- <breadcrumb class="breadcrumb-container" /> -->
@@ -16,10 +16,10 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            src="http://destiny001.gitee.io/image/monkey_02.jpg"
+            :src="$store.state.user.userInfo.staffPhoto"
             class="user-avatar"
           />
-          <span>用户名</span>
+          <span>{{ $store.state.user.userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
