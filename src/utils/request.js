@@ -9,7 +9,7 @@ service.interceptors.request.use() // 请求拦截器
 service.interceptors.response.use(
   (res) => {
     const { data, message, success } = res.data
-    console.log(success)
+    // console.log(success)
     if (success) {
       return data
     }
