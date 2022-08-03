@@ -12,6 +12,8 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import * as directives from '@/directives'
+
 import '@/icons' // icon
 import '@/permission' // permission control
 
@@ -32,9 +34,21 @@ Vue.use(ElementUI, { locale })
 // 关闭生产提示
 Vue.config.productionTip = false
 
+// Vue.directive('imgError', {
+//   inserted: function (el, { value }) {
+//     el.onerror = function () {
+//       el.src = value
+//     }
+//   }
+// })
+
+for (let key in directives) {
+  Vue.directive(key, directives[key])
+}
+
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App)
 })
