@@ -17,6 +17,7 @@ function isTimeOut() {
 }
 
 service.interceptors.request.use(async (config) => {
+  // console.log(store.state.user.token)
   if (store.state.user.token) {
     if (isTimeOut()) {
       // console.log('过期了')
