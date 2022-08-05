@@ -3,7 +3,7 @@
     <el-col>{{ treeNode.name }}</el-col>
     <el-col :span="5">
       <el-row type="flex">
-        <el-col>{{ treeNode.manage }}</el-col>
+        <el-col>{{ treeNode.manager }}</el-col>
         <el-col>
           <el-dropdown>
             <span class="el-dropdown-link">

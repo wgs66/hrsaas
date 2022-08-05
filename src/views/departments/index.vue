@@ -18,6 +18,8 @@
 
 <script>
 import TreeTools from './components/tree-tools'
+import { getDepartmentList } from '@/api'
+import { listDesc } from '@/utils'
 export default {
   data() {
     return {
@@ -26,7 +28,7 @@ export default {
         { name: '行政部' },
         { name: '人事部' }
       ],
-      company: { name: '传智教育', manage: '负责人' },
+      company: { name: '传智教育', manager: '负责人' },
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -36,9 +38,17 @@ export default {
   components: {
     TreeTools
   },
-  created() {},
+  created() {
+    this.loadDepts()
+  },
 
-  methods: {}
+  methods: {
+    async loadDepts() {
+      const res = await getDepartmentList()
+      this.departs = listDesc(res.depts, '')
+      // console.log(this.departs)
+    }
+  }
 }
 </script>
 
