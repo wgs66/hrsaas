@@ -118,6 +118,13 @@ export function param2Obj(url) {
   return obj
 }
 
+/**
+ *  把数据处理成树形数据
+ * @param {Array} data
+ * @param {String} pid
+ * @returns
+ */
+
 export function listDesc(data, pid) {
   const arr = []
   data.forEach((item) => {
