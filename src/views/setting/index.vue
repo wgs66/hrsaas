@@ -30,7 +30,34 @@
           >
           </el-pagination>
         </el-tab-pane>
-        <el-tab-pane label="公司信息" name="second">配置管理</el-tab-pane>
+        <el-tab-pane label="公司信息" name="second">
+          <!-- 提示 -->
+          <el-alert
+            title="对公司名称、公司地址、营业执照、公司地区的更新，将使得公司资料被重新审核，请谨慎修改"
+            type="info"
+            show-icon
+            :closable="false"
+          >
+          </el-alert>
+          <!-- 表格 -->
+          <el-form ref="form" label-width="80px">
+            <el-form-item label="公司名称">
+              <el-input disabled v-model="CompanyInfo.name"></el-input>
+            </el-form-item>
+            <el-form-item label="公司地址">
+              <el-input
+                disabled
+                v-model="CompanyInfo.companyAddress"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="公司邮箱">
+              <el-input disabled v-model="CompanyInfo.mailbox"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+              <el-input disabled v-model="CompanyInfo.remarks"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <!-- 弹框 -->
@@ -62,7 +89,7 @@
 </template>
 
 <script>
-import { getRoleApi, postRpleApi } from '@/api'
+import { getRoleApi, postRpleApi, getCompanyInfo } from '@/api'
 export default {
   data() {
     return {
@@ -72,6 +99,7 @@ export default {
       pageSize: 2,
       page: 1,
       addDialogVisible: false,
+      CompanyInfo: {},
       addRoleFrom: {
         name: '', // 部门名称
         description: ''
@@ -84,6 +112,7 @@ export default {
 
   created() {
     this.getRole()
+    this.getCompanyInfo()
   },
 
   methods: {
@@ -92,7 +121,7 @@ export default {
         page: this.page,
         pagesize: this.pageSize
       })
-      console.log(rows)
+      // console.log(rows)
       this.total = total
       this.tableData = rows
     },
@@ -122,6 +151,13 @@ export default {
     dialogClose() {
       this.$refs.form.resetFields()
       this.addRoleFrom.description = ''
+    },
+    async getCompanyInfo() {
+      const res = await getCompanyInfo(
+        this.$store.state.user.userInfo.companyId
+      )
+      // console.log(res)
+      this.CompanyInfo = res
     }
   }
 }
