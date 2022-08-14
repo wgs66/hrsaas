@@ -17,6 +17,18 @@ import * as directives from '@/directives'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import component from '@/components'
+
+import * as filters from '@/filters'
+
+// 过滤器
+for (const key in filters) {
+  Vue.filter(key, filters[key])
+}
+
+// 注册组件
+Vue.use(component)
+
 // mock 假数据
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
@@ -42,6 +54,7 @@ Vue.config.productionTip = false
 //   }
 // })
 
+// 自定义指令
 for (let key in directives) {
   Vue.directive(key, directives[key])
 }
