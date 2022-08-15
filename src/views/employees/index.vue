@@ -60,7 +60,12 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template slot-scope="{ row }">
-              <el-button type="text" size="small">查看</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="$router.push('/employees/detail/' + row.id)"
+                >查看</el-button
+              >
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
@@ -120,7 +125,7 @@ export default {
     async getEmployessListApi() {
       const { rows, total } = await getEmployessListApi(this.pages)
       this.employess = rows
-      console.log(rows)
+      // console.log(rows)
       this.total = total
     },
     handleCurrentChange(val) {
