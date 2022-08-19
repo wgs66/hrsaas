@@ -21,12 +21,16 @@ import component from '@/components'
 
 import * as filters from '@/filters'
 
+import Print from 'vue-print-nb'
+
 // 过滤器
 for (const key in filters) {
   Vue.filter(key, filters[key])
 }
 
 // 注册组件
+Vue.use(Print)
+
 Vue.use(component)
 
 // mock 假数据
