@@ -8,7 +8,11 @@ router.beforeEach(async (to, from, next) => {
   const token = store.state.user.token
   if (token) {
     if (!store.state.user.userInfo.userId) {
-      await store.dispatch('user/getUserInfo')
+      const { roles } = await store.dispatch('user/getUserInfo')
+      await store.dispatch('permission/filterRouter', roles)
+      // console.log(roles)
+      await store.dispatch('permission/setPointsAction', roles.points)
+      next(to.path)
     }
 
     // 1 登录

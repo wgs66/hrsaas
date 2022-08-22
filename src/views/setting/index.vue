@@ -3,17 +3,32 @@
     <div class="app-container">
       <el-tabs v-model="activeName">
         <el-tab-pane label="角色管理" name="first">
-          <el-button type="primary" @click="addRoleDialog">新增角色</el-button>
+          <el-button
+            type="primary"
+            @click="addRoleDialog"
+            v-isHas="point.roles.add"
+            >新增角色</el-button
+          >
           <!-- 表格 -->
           <el-table :data="tableData" style="width: 100%">
             <el-table-column type="index" label="序号"> </el-table-column>
             <el-table-column prop="name" label="角色"> </el-table-column>
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column label="操作">
-              <template>
-                <el-button size="small" type="success">分配权限</el-button>
+              <template slot-scope="scope">
+                <el-button
+                  size="small"
+                  type="success"
+                  @click="setRightsDialogVisble(scope.row.id)"
+                  >分配权限</el-button
+                >
                 <el-button size="small" type="primary">编辑</el-button>
-                <el-button size="small" type="danger">删除</el-button>
+                <el-button
+                  size="small"
+                  type="danger"
+                  @click="onRemoveRoles(scope.row.id)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -85,12 +100,48 @@
         <el-button @click="onAddRole" type="primary">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 分配权限 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="setRightsDialog"
+      width="50%"
+      :close-on-click-modal="false"
+      destroy-on-close
+      @close="RolesDialogClose"
+    >
+      <el-tree
+        :data="permissionList"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="defaultCheckKeys"
+        :props="{ label: 'name' }"
+        ref="perTree"
+      >
+      </el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightsDialog = false">取 消</el-button>
+        <el-button type="primary" @click="onRoleAdds">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRoleApi, postRpleApi, getCompanyInfo } from '@/api'
+import {
+  getRoleApi,
+  postRpleApi,
+  getCompanyInfo,
+  getPermissionList,
+  getRolesInfo,
+  removeRolesApi,
+  assignPerm
+} from '@/api'
+import { listDesc } from '@/utils'
+import mixinPermissions from '@/mixins/permission'
 export default {
+  mixins: [mixinPermissions],
   data() {
     return {
       activeName: 'first',
@@ -99,6 +150,7 @@ export default {
       pageSize: 2,
       page: 1,
       addDialogVisible: false,
+      setRightsDialog: false,
       CompanyInfo: {},
       addRoleFrom: {
         name: '', // 部门名称
@@ -106,13 +158,17 @@ export default {
       },
       addRoleFromRules: {
         name: [{ required: true, message: '请输入新增内容', trigger: 'blur' }]
-      }
+      },
+      permissionList: [],
+      defaultCheckKeys: [],
+      roleId: ''
     }
   },
 
   created() {
     this.getRole()
     this.getCompanyInfo()
+    this.getPermissionList()
   },
 
   methods: {
@@ -158,6 +214,38 @@ export default {
       )
       // console.log(res)
       this.CompanyInfo = res
+    },
+    async onRemoveRoles(id) {
+      await removeRolesApi(id)
+      this.$message.success('删除成功')
+      this.getRole()
+    },
+    async setRightsDialogVisble(id) {
+      this.setRightsDialog = true
+      this.roleId = id
+      // console.log(id)
+      const res = await getRolesInfo(id)
+      this.defaultCheckKeys = res.permIds
+      // console.log(this.defaultCheckKeys)
+    },
+    // 获取权限列表
+    async getPermissionList() {
+      const res = await getPermissionList()
+      // console.log(res)
+      const treePermissions = listDesc(res, '0')
+      // console.log(treePermissions)
+      this.permissionList = treePermissions
+    },
+    RolesDialogClose() {
+      this.defaultCheckKeys = []
+    },
+    async onRoleAdds() {
+      await assignPerm({
+        id: this.roleId,
+        permIds: this.$refs.perTree.getCheckedKeys()
+      })
+      this.$message.success('分配成功')
+      this.setRightsDialog = false
     }
   }
 }

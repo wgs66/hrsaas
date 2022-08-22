@@ -4,13 +4,21 @@
       <page-tools>
         <span slot="left-tag">共166条记录</span>
         <template slot="right">
-          <el-button size="small" type="warning" @click="postInfo"
+          <el-button
+            size="small"
+            type="warning"
+            @click="postInfo"
+            v-isHas="point.employees.import"
             >导入</el-button
           >
           <el-button size="small" type="danger" @click="exportExcel"
             >导出</el-button
           >
-          <el-button size="small" type="primary" @click="addDialogVisible"
+          <el-button
+            size="small"
+            type="primary"
+            @click="addDialogVisible"
+            v-if="isHas(point.employees.add)"
             >新增员工</el-button
           >
         </template>
@@ -70,8 +78,17 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
-              <el-button type="text" size="small" @click="onRemove(row.id)"
+              <el-button
+                type="text"
+                size="small"
+                @click="showAssignRole(row.id)"
+                >角色</el-button
+              >
+              <el-button
+                type="text"
+                size="small"
+                @click="onRemove(row.id)"
+                v-if="point.employees.del"
                 >删除</el-button
               >
             </template>
@@ -100,6 +117,11 @@
     <el-dialog title="二维码" :visible.sync="dialogVisible">
       <canvas id="canvas"></canvas>
     </el-dialog>
+
+    <AssignRole
+      :currentUserId="currentUserId"
+      :visible.sync="showAssignRoleDialog"
+    />
   </div>
 </template>
 
@@ -109,7 +131,12 @@ import employees from '@/constant/employees'
 const { exportExcelMapPath, hireType } = employees
 import QRCode from 'qrcode'
 import AddEmployees from './components/add-employees.vue'
+import AssignRole from './components/assign-role.vue'
+import mixinPermissions from '@/mixins/permission'
+
 export default {
+  mixins: [mixinPermissions],
+
   data() {
     return {
       employess: [],
@@ -119,14 +146,16 @@ export default {
         size: 5
       },
       visible: false,
-      dialogVisible: false
+      dialogVisible: false,
+      showAssignRoleDialog: false,
+      currentUserId: ''
     }
   },
 
   created() {
     this.getEmployessListApi()
   },
-  components: { AddEmployees },
+  components: { AddEmployees, AssignRole },
   methods: {
     async getEmployessListApi() {
       const { rows, total } = await getEmployessListApi(this.pages)
@@ -193,6 +222,10 @@ export default {
         const canvas = document.getElementById('canvas')
         QRCode.toCanvas(canvas, staffPhoto)
       })
+    },
+    showAssignRole(id) {
+      this.showAssignRoleDialog = true
+      this.currentUserId = id
     }
   }
 }
