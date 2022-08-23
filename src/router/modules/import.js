@@ -2,14 +2,16 @@ import Layout from '@/layout'
 export default {
   path: '/import',
   component: Layout,
-  meta: { id: 'import' },
-
   hidden: true,
+  meta: {
+    id: 'import' // 用来和后端权限做约定的
+  },
   children: [
     {
       path: '',
-      component: () => import('@/views/import')
-      // meta: { title: '审批', icon: 'tree-table' }
+      name: 'import',
+      component: () => import('@/views/import'),
+      meta: { title: '员工', icon: 'people' }
     }
   ]
 }

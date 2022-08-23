@@ -62,17 +62,16 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-            <upload-img
-              ref="headerImg"
-              @onSuccess="headeronSuccess"
-            ></upload-img>
+            <upload-img ref="headerImg" @onSuccess="headerImgSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
       <!-- 保存个人信息 -->
       <el-row class="inline-info" type="flex" justify="center">
         <el-col :span="12">
-          <el-button type="primary" @click="updateUserInfo">保存更新</el-button>
+          <el-button type="primary" @click="onSaveUserDetail"
+            >保存更新</el-button
+          >
           <el-button @click="$router.back()">返回</el-button>
         </el-col>
       </el-row>
@@ -99,10 +98,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
-          <upload-img
-            ref="empolyeesImg"
-            @onSuccess="employeesonSuccess"
-          ></upload-img>
+          <upload-img ref="employeesPic" @onSuccess="employeesPicSuccess" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -388,7 +384,7 @@
         <!-- 保存员工信息 -->
         <el-row class="inline-info" type="flex" justify="center">
           <el-col :span="12">
-            <el-button type="primary" @click="updatePersonal"
+            <el-button type="primary" @click="onSaveEmployeesInfo"
               >保存更新</el-button
             >
             <el-button @click="$router.back()">返回</el-button>
@@ -401,12 +397,9 @@
 
 <script>
 import EmployeeEnum from '@/constant/employees'
-import {
-  getUserDetails,
-  saveUserDetailById,
-  getPersonalDetail,
-  updatePersonal
-} from '@/api'
+import { getUserDetail, saveUserDetailById } from '@/api/user.js'
+import { getPersonalDetail, updatePersonal } from '@/api/employees.js'
+
 export default {
   data() {
     return {
@@ -474,53 +467,51 @@ export default {
         resume: '', // 简历
         isThereAnyCompetitionRestriction: '', // 有无竞业限制
         proofOfDepartureOfFormerCompany: '', // 前公司离职证明
-        remarks: '' // 备注
-      }
+        remarks: '', // 备注
+      },
     }
   },
   created() {
-    this.getUserDetails()
-    this.getPersonalDetail()
+    this.loadUserDetail()
+    this.loadEmployeesInfo()
   },
   methods: {
-    // 获取用户信息
-    async getUserDetails() {
-      this.userInfo = await getUserDetails(this.userId)
+    async loadUserDetail() {
+      this.userInfo = await getUserDetail(this.userId)
       this.$refs.headerImg.fileList.push({
-        url: this.userInfo.staffPhoto
+        url: this.userInfo.staffPhoto,
       })
     },
-    // 获取员工信息
-    async getPersonalDetail() {
+    async loadEmployeesInfo() {
       this.formData = await getPersonalDetail(this.userId)
-      this.$refs.empolyeesImg.fileList.push({
-        url: this.formData.staffPhoto
+      this.$refs.employeesPic.fileList.push({
+        url: this.formData.staffPhoto,
       })
     },
-    // 更新用户信息
-    async updateUserInfo() {
+    async onSaveUserDetail() {
       if (this.$refs.headerImg.loading) {
-        return this.$message.error('头像正在上传')
+        return this.$message.error('头像正在上传中')
       }
       await saveUserDetailById(this.userInfo)
-      this.$message.success('操作成功')
+
+      this.$message.success('更新成功')
     },
-    // 更新员工信息
-    async updatePersonal() {
-      if (this.$refs.empolyeesImg.loading) {
-        return this.$message.error('头像正在上传')
+    async onSaveEmployeesInfo() {
+      if (this.$refs.employeesPic.loading) {
+        return this.$message.error('头像正在上传中')
       }
       await updatePersonal(this.formData)
-      this.$message.success('操作成功')
+      this.$message.success('更新成功')
     },
-    headeronSuccess({ url }) {
-      console.log(url)
+    // 监听员工头像上传成功
+    headerImgSuccess({ url }) {
       this.userInfo.staffPhoto = url
     },
-    employeesonSuccess({ url }) {
+    // 监听员工照片上传成功
+    employeesPicSuccess({ url }) {
       this.formData.staffPhoto = url
-    }
-  }
+    },
+  },
 }
 </script>
 

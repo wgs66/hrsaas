@@ -1,12 +1,9 @@
 import request from '@/utils/request'
-
 /**
- * 根据id获取企业信息
- * @param {String} companyId
- * @returns Promise
- */
-export function getCompanyInfo(companyId) {
+ * 获取公司信息
+ * **/
+export function getCompanyInfoApi(companyId) {
   return request({
-    url: `/company/${companyId}`
+    url: `/company/${companyId}`,
   })
 }

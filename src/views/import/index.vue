@@ -1,19 +1,16 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <upload-excel
-        :beforeUpload="UploadSuccess"
-        :onSuccess="onSuccess"
-      ></upload-excel>
+      <upload-excel :beforeUpload="excelSuccess" :onSuccess="onSuccess" />
     </div>
   </div>
 </template>
 
 <script>
-import { importEmployess } from '@/api'
 import employees from '@/constant/employees'
-const { importMapKeyPath } = employees
+import { importEmployees } from '@/api/employees'
 import { formatTime } from '@/filters'
+const { importMapKeyPath } = employees
 export default {
   data() {
     return {}
@@ -22,38 +19,38 @@ export default {
   created() {},
 
   methods: {
-    UploadSuccess({ name }) {
+    // 上传前的处理
+    excelSuccess({ name }) {
       if (!name.endsWith('.xlsx')) {
-        this.$message.error('请上传.xlsx文件')
+        this.$message.error('请选择xlsx文件')
         return false
       }
       return true
     },
+    // 上传成功
     async onSuccess({ header, results }) {
-      // console.log(header)
-      // console.log(results)
       const newArr = results.map((item) => {
         const obj = {}
         for (let key in importMapKeyPath) {
           if (key === '入职日期' || key === '转正日期') {
+            // excel 时间戳
             const timestamp = item[key]
-            const data = new Date((timestamp - 1) * 24 * 3600000)
-            data.setFullYear(data.getFullYear() - 70)
-            obj[importMapKeyPath[key]] = formatTime(data)
+            // 转换
+            const date = new Date((timestamp - 1) * 24 * 3600000)
+            date.setFullYear(date.getFullYear() - 70)
+            obj[importMapKeyPath[key]] = formatTime(date)
           } else {
             obj[importMapKeyPath[key]] = item[key]
           }
         }
         return obj
       })
-
-      await importEmployess(newArr)
-      this.$message.success('操作成功')
+      await importEmployees(newArr)
+      this.$message.success('导入成功')
       this.$router.go(-1)
-      console.log(111)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="less"></style>

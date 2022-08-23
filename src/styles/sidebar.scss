@@ -26,8 +26,8 @@
     }
 
     .scrollbar-wrapper {
-      background: url('~@/assets/common/leftnavBg.png') no-repeat 0 100%;
       overflow-x: hidden !important;
+      background: url('~@/assets/common/leftnavBg.png') no-repeat 0 100%;
     }
 
     .el-scrollbar__bar.is-vertical {

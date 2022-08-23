@@ -7,65 +7,107 @@ import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
+import '@/styles/test.scss'
 
 import App from './App'
 import store from './store'
 import router from './router'
-
-import * as directives from '@/directives'
+import i18n from '@/i18n'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-
-import component from '@/components'
-
+// 自定义指令
+import * as directives from '@/directives'
+// 组件
+import components from '@/components'
+// 过滤器封装
 import * as filters from '@/filters'
-
 import Print from 'vue-print-nb'
 
-// 过滤器
-for (const key in filters) {
-  Vue.filter(key, filters[key])
-}
+// import VueI18n from 'vue-i18n'
 
-// 注册组件
+// Vue.use(VueI18n)
+// // console.log(Print)
+
+// const messages = {
+//   en: {
+//     message: {
+//       hello: 'hello world'
+//     }
+//   },
+//   ja: {
+//     message: {
+//       hello: 'こんにちは、世界'
+//     }
+//   }
+// }
+
+// // 通过选项创建 VueI18n 实例
+// const i18n = new VueI18n({
+//   locale: 'ja', // 设置地区
+//   messages // 设置地区信息
+// })
+
+// import VueI18n from 'vue-i18n'
+
+// Vue.use(VueI18n)
+// // 准备翻译的语言环境信息
+// const messages = {
+//   zh: {
+//     message: '你好，世界'
+//   },
+//   en: {
+//     message: {
+//       hello: 'hello world'
+//     }
+//   }
+// }
+
+// // 通过选项创建 VueI18n 实例
+// const i18n = new VueI18n({
+//   locale: 'zh', // 设置地区
+//   messages // 设置地区信息
+// })
+
 Vue.use(Print)
 
-Vue.use(component)
+Vue.use(ElementUI, {
+  i18n: (key, value) => i18n.t(key, value)
+})
 
-// mock 假数据
+// 统一注册过滤器
+for (let key in filters) {
+  Vue.filter(key, filters[key])
+}
+// 统一注册组件
+Vue.use(components)
+// 统一注册自定义指令
+for (let key in directives) {
+  Vue.directive(key, directives[key])
+}
+
+// mock假数据
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
 
 // 注册element ui
-Vue.use(ElementUI, { locale })
+// Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 
-// dev：development 开发
-// test：测试
+// dev: development 开发
+// test: 测试
 // production 生产
-// 关闭生产提示
 Vue.config.productionTip = false
-
-// Vue.directive('imgError', {
-//   inserted: function (el, { value }) {
-//     el.onerror = function () {
-//       el.src = value
-//     }
-//   }
-// })
-
-// 自定义指令
-for (let key in directives) {
-  Vue.directive(key, directives[key])
-}
+// 参数1: 自定义指令的名字: 不需要+v-
+// 参数2: 是配置对象
 
 new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: (h) => h(App)
 })
